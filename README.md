@@ -10,6 +10,18 @@
 * Rainier Barbosa dos Santos Viana;
 * Rodrigo Barros Costa
 
+## Objetivo:
+
+ *O Notes tem como objetivo, oferecer a usuários, a possibilidade de registrar suas anotações, como tarefas, e atividades.*
+
+## Funcionalidades:
+*  Listar todas as anotações;
+*  Excluir uma anotação;
+*  Editar uma anotação;
+*  Criar uma anotação;
+*  Pesquisar notas pelo Titulo;
+*  Fazer login e cadastro e usuário na aplicação;
+
 
 ## Como Rodar o app:
 
@@ -41,6 +53,7 @@
  <img src=	"https://img.shields.io/badge/Express.js-404D59?style=for-the-badge">
  <img src=	"https://img.shields.io/badge/Jest-323330?style=for-the-badge&logo=Jest&logoColor=white">
  <img src=	"https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white">
+ <img src=	"https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white">
 </div>
 
 
