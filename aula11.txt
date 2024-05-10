@@ -1,0 +1,163 @@
+npm install express-generator (na pasta aulas)
+
+npx express-generator --no-view aula10 (na pasta aulas)
+
+cd aula10	
+
+npm install
+
+npm install swagger-ui-express mongoose dotenv
+
+npm install --save-dev nodemon jest supertest
+
+
+// router_produtos.test.js
+const supertest = require("supertest");
+
+const app = require("../app");
+
+const request = supertest(app);
+
+let id = null;
+
+describe("API Loja Virtual", () => {
+  // test("Deve retornar 201 e um JSON para POST /produtos", async () => {
+  //   const result = await request
+  //     .post("/produtos")
+  //     .send({ nome: "banana", preco: 15.0 });
+  //   id = result.body._id.toString();
+  //   expect(result.status).toBe(201);
+  //   expect(result.type).toBe("application/json");
+  // });
+
+  test("Deve retornar 422 e um JSON para POST /produtos", async () => {
+    const result = await request
+      .post("/produtos")
+      .send({});
+    expect(result.status).toBe(422);
+    expect(result.type).toBe("application/json");
+  });
+
+  test("Deve retornar 200 e um JSON array para GET /produtos", async () => {
+    const result = await request
+      .get("/produtos");
+    expect(result.status).toBe(200);
+    expect(result.type).toBe("application/json");
+  });
+
+  test("Deve retornar 200 e um JSON para GET /produtos/id", async () => {
+    const result = await request
+      .get(`/produtos/${id}`);
+    expect(result.status).toBe(200);
+    expect(result.type).toBe("application/json");
+  });
+
+  test("Deve retornar 404 e um JSON para GET /produtos/id", async () => {
+    const result = await request
+      .get(`/produtos/id`);
+    expect(result.status).toBe(404);
+    expect(result.type).toBe("application/json");
+  });
+
+  test("Deve retornar 200 e um JSON para PUT /produtos/id", async () => {
+    const result = await request
+      .put(`/produtos/${id}`)
+      .send({nome: "banana nanica", preco: 22.0});
+    expect(result.status).toBe(200);
+    expect(result.type).toBe("application/json");
+  });
+
+  test("Deve retornar 404 e um JSON para PUT /produtos/id", async () => {
+    const result = await request
+      .put(`/produtos/id`);
+    expect(result.status).toBe(404);
+    expect(result.type).toBe("application/json");
+  });
+
+  test("Deve retornar 422 e um JSON para PUT /produtos/id", async () => {
+    const result = await request
+      .put(`/produtos/${id}`)
+      .send({});
+    expect(result.status).toBe(422);
+    expect(result.type).toBe("application/json");
+  });
+
+  test("Deve retornar 204 e um JSON para DELETE /produtos/id", async () => {
+    const result = await request
+      .delete(`/produtos/${id}`);
+    expect(result.status).toBe(204);
+    expect(result.type).toBe({});
+  });
+
+  test("Deve retornar 404 e um JSON para DELETE /produtos/id", async () => {
+    const result = await request
+      .delete(`/produtos/id`);
+    expect(result.status).toBe(404);
+    expect(result.type).toBe("application/json");
+  });
+});
+
+
+// router_produtos.js
+const express = require("express");
+
+const controllerProdutos = require("../controllers/controller_produtos");
+
+const router = express.Router();
+
+router.post("/", controllerProdutos.validaDados,
+ controllerProdutos.criar);
+
+module.exports = router;
+
+// controller_produtos.js
+const Produto = require("../models/model_produtos");
+
+async function validaDados(req, res, next) {
+  const produto = new Produto(req.body);
+  try {
+    await produto.validate();
+    next();
+  } catch (err) {
+    res.status(422).json({ msg: "Dados do protudo invalidos" });
+  }
+}
+
+async function criar(req, res) {
+  const produto = await Produto.create(req.body);
+  res.status(201).json(produto);
+}
+
+module.exports = { validaDados, criar };
+
+// model_produtos.js
+const mongoose = require("mongoose");
+
+const produtoSchema = new mongoose.Schema({
+  nome: { type: String, trim: true, uppercase: true, required: true },
+  preco: { type: Number, required: true },
+});
+
+module.exports = mongoose.model("Produto", produtoSchema);
+
+// app.js
+require('dotenv').config();
+const mongoose = require('mongoose');
+var express = require('express');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+
+mongoose.connect(process.env.MONGODB_URL);
+
+const routerProdutos = require('./routes/router_produtos');
+
+var app = express();
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+app.use('/produtos', routerProdutos);
+
+module.exports = app;
