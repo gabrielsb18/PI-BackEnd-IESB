@@ -6,12 +6,30 @@ async function criar(req,res) {
     res.status(201).json(nota);
 }
 
-function listarNotes(req,res){
-
+async function listarNotes(req,res){
+    const notas = await nota.find({}) 
+    res.json(notas)
 }
 
-function listarNotaPeloID(req,res){
-
+async function buscarPeloID(req,res, next){
+    try {
+        const id = new mongoose.Types.ObjectId(req.params.id)
+        const nota = await nota.findOne({_id:id})
+        next()
+    } catch (err) {
+        res.status(404).json({msg:"Produto não encontrado"})
+    }
 }
 
-module.exports={criar, listarNotes,listarNotaPeloID}
+async function obterNota(req,res, next){
+    try {
+        const id = new mongoose.Types.ObjectId(req.params.id)
+        const nota = await nota.findOne({_id:id})
+        res.json(nota)
+        next()
+    } catch (err) {
+        res.status(404).json({msg:"Produto não encontrado"})
+    }
+}
+
+module.exports={criar, listarNotes,buscarPeloID, obterNota}
