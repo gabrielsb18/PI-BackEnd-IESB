@@ -32,4 +32,10 @@ async function obterNota(req,res, next){
     }
 }
 
-module.exports={criar, listarNotes,buscarPeloID, obterNota}
+async function remover(req, res) {
+    const id = new mongoose.Types.ObjectId(req.params.id);
+    const produto = await Produto.findOneAndDelete({ _id: id });
+    res.status(204).end();
+}
+
+module.exports={criar, listarNotes,buscarPeloID, obterNota,remover}
