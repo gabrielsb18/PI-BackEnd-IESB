@@ -32,4 +32,4 @@ async function obterNota(req,res, next){
     }
 }
 
-module.exports={criar, listarNotes,buscarPeloID, obterNota}
+module.exports={criar, listarNotes, buscarPeloID, obterNota}
