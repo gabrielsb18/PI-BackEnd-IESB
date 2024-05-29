@@ -38,4 +38,10 @@ async function remover(req, res) {
     res.status(204).end();
 }
 
-module.exports={criar, listarNotes,buscarPeloID, obterNota,remover}
+async function atualizar(req,res){
+    const id = new mongoose.Types.ObjectId(req.params.id);
+    const nota = await Notes
+    res.status(204);
+} 
+
+module.exports={criar, listarNotes,buscarPeloID, obterNota,remover, atualizar}
