@@ -40,7 +40,7 @@ async function remover(req, res) {
 
 async function atualizar(req,res){
     const id = new mongoose.Types.ObjectId(req.params.id);
-    const nota = await Notes
+    const nota = await Notes.findOneAndUpdate({_id: id },req.body)
     res.status(204);
 } 
 
