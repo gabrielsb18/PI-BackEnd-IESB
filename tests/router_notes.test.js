@@ -30,10 +30,21 @@ describe("API Notes - Tarefas diarias", function(){
         expect(result.headers["content-type"]).toMatch(/json/);
     });
     
-    test("Deve esperar um 404 no GET /notes/id", async ()=>{
-        const result = await request 
-        .get("/notes/id");
+    test("Deve retornar um 404 no GET /notes/id", async ()=>{
+        const result = await request .get("/notes/id");
         expect(result.status).toBe(404);
         expect(result.type).toBe("application/json");
     });
+
+    test("Deve retornar um 204 no Delete /notes/id", async ()=>{
+        const result = await request.delete(`/notes/${id}`);
+        expect(result.status).toBe(204);
+        expect(result.type).toBe("")
+    });
+
+    test("Deve retornar um 404 no Delete /notes/id",async ()=>{
+        const result = await request.delete("/notes/id");
+        expect(result.status).toBe(404);
+        expect(result.type).toBe("application/json");
+    })
 });
