@@ -1,20 +1,20 @@
 const mongoose = require("mongoose");
-const nota = require("../models/model_notes");
+const Notes = require("../models/model_notes");
 
 async function criar(req,res) {
-    const nota = await nota.create(req.body);
+    const nota = await Notes.create(req.body);
     res.status(201).json(nota);
 }
 
 async function listarNotes(req,res){
-    const notas = await nota.find({}) 
+    const notas = await Notes.find({}) 
     res.json(notas)
 }
 
 async function buscarPeloID(req,res, next){
     try {
         const id = new mongoose.Types.ObjectId(req.params.id)
-        const nota = await nota.findOne({_id:id})
+        const nota = await Notes.findOne({_id:id})
         next()
     } catch (err) {
         res.status(404).json({msg:"Produto não encontrado"})
@@ -24,7 +24,7 @@ async function buscarPeloID(req,res, next){
 async function obterNota(req,res, next){
     try {
         const id = new mongoose.Types.ObjectId(req.params.id)
-        const nota = await nota.findOne({_id:id})
+        const nota = await Notes.findOne({_id:id})
         res.json(nota)
         next()
     } catch (err) {
@@ -34,7 +34,7 @@ async function obterNota(req,res, next){
 
 async function remover(req, res) {
     const id = new mongoose.Types.ObjectId(req.params.id);
-    const produto = await Produto.findOneAndDelete({ _id: id });
+    const nota = await Notes.findOneAndDelete({ _id: id });
     res.status(204).end();
 }
 
