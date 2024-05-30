@@ -6,6 +6,16 @@ async function criar(req,res) {
     res.status(201).json(nota);
 }
 
+async function validaDados(req, res, next){
+    const nota = new Notes(req.body)
+    try{
+        await nota.validate();
+        next();
+    }catch(err){
+        res.status(422).json({msg:"Dados invalidos!"})
+    };
+}
+
 async function listarNotes(req,res){
     const notas = await Notes.find({}) 
     res.json(notas)
@@ -44,4 +54,4 @@ async function atualizar(req,res){
     res.json(nota);
 } 
 
-module.exports={criar, listarNotes,buscarPeloID, obterNota,remover, atualizar}
+module.exports={criar, listarNotes,buscarPeloID, obterNota,remover, atualizar, validaDados}

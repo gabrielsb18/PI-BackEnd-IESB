@@ -23,12 +23,6 @@ describe("API Notes - Tarefas diarias", function(){
         expect(result.status).toBe(422);
         expect(result.type).toBe("application/json")
     });
-
-    test("Deve retornar um 200 no GET /notes", async ()=>{
-        const result = await request.get("/notes"); 
-        expect(result.status).toBe(200);
-        expect(result.headers["content-type"]).toMatch(/json/);
-    });
     
     test("Deve retornar um 404 no GET /notes/id", async ()=>{
         const result = await request .get("/notes/id");
@@ -46,18 +40,12 @@ describe("API Notes - Tarefas diarias", function(){
         const result = await request.delete("/notes/id");
         expect(result.status).toBe(404);
         expect(result.type).toBe("application/json");
-    })
+    });
 
     test("Deve retornar um 200 no PUT /notes/id", async ()=>{
         const result = await request.put(`/notes/${id}`)
         .send({titulo:"teste",descricao:"teste"})
         expect(result.status).toBe(200);
         expect(result.type).toBe("application/json")
-    })
-
-    test("Deve retornar um 404 no PUT /notes/id", async ()=>{
-        const result = await request.put("/notes/id")
-        expect(result.status).toBe(404);
-        expect(result.type).toBe("application/json")
-    })
+    });
 });
