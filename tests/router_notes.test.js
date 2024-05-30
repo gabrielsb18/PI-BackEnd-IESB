@@ -46,14 +46,14 @@ describe("API Notes - Tarefas diarias", function(){
         const result = await request.delete("/notes/id");
         expect(result.status).toBe(404);
         expect(result.type).toBe("application/json");
-    })
+    });
 
     test("Deve retornar um 200 no PUT /notes/id", async ()=>{
         const result = await request.put(`/notes/${id}`)
         .send({titulo:"teste",descricao:"teste"})
         expect(result.status).toBe(200);
         expect(result.type).toBe("application/json")
-    })
+    });
 
     test("Deve retornar um 404 no PUT /notes/id", async ()=>{
         const result = await request.put("/notes/id")
