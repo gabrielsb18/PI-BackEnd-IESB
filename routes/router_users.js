@@ -3,5 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 router.post("/", controller.criar);
-router.post("/login", controller.login);
-router.post("/renovar", controller.renovar);
+// router.post("/login", controller.login);
+// router.post("/renovar", controller.renovar);
+
+module.exports= router;
