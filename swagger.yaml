@@ -5,7 +5,7 @@ info:
 tags:
     - notas
 paths:
-  /notes:
+  /notas:
     post:
       summary: Cria uma nova nota
       tags:
@@ -16,10 +16,52 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Note'
+              $ref: '#/components/schemas/Notas'
       responses:
         '201':
           description: Nota criada com sucesso
           content:
             application/json:
               schema:
+                $ref:'#components/schemas/Notas'
+    get:
+      summary: Lista todas as notas
+      tags:
+        - Notas
+      responses:
+        '200':
+          description: Lista notas
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/ArrayOfNotas'
+components:
+  schemas:
+    ArrayOfNotas: 
+      type: array
+      items: 
+        $ref:'#components/schemas/Notas'
+    Notas:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1" 
+        titulo:
+          type: string
+          example: Tarefa notas dia de hoje
+        description:
+          type: string
+          example: Descrição da tarefa
+    Usuarios:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "email@gmail.com"
+        senha:
+          type: string
+          example: "senha123456_"
+        
+
+      
