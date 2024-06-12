@@ -23,4 +23,18 @@ async function criar(req, res) {
     });
 }
 
-module.exports = {criar}
+async function login(req, res) {
+    const usuario = await Usuario.findOne({ email: req.body.email });
+    console.log(usuario.senha, usuario.salt)
+    if (usuario.senha === cryptografaSenha(req.body.senha, usuario.salt)) {
+        res.json({
+            token: jwt.sign({ email: usuario.email }, process.env.SECRET, {
+                expiresIn: "1h",
+            }),
+        });
+    } else {
+        res.status(401).status({ msg: "Acesso negado" });
+    }
+}
+
+module.exports = {criar, login}
