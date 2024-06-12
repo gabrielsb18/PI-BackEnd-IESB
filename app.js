@@ -8,9 +8,7 @@ var logger = require('morgan');
 
 const notesRouter = require('./routes/router_notes')
 const usersRouter = require("./routes/router_users")
-
-// var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
+const routerDocs = require("./routes/router_docs")
 
 mongoose.connect(process.env.MONGODB_URL);
 
@@ -22,8 +20,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
 app.use("/notes",notesRouter)
 app.use("/users",usersRouter)
+app.use("/api-docs",routerDocs)
+
 module.exports = app;
