@@ -1,0 +1,7 @@
+openapi: 3.0.0
+info:
+    title: API Notes
+    version: 1.0
+tags:
+    - notas
+paths:
