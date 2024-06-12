@@ -8,6 +8,16 @@ function cryptografaSenha(senha, salt) {
     return hash.digest('hex');
 }
 
+function validarToken(req, res, next) {
+    const token = req.headers["authorization"]
+    try {
+        (jwt.verify(token, process.env.SEGREDO))
+        next()
+    } catch (error) {
+        res.status(401).json({msg: "ACESSO NEGADO!"})
+    }
+}
+
 async function criar(req, res) {
     const {email, senha} = req.body;
     const salt = crypto.randomBytes(16).toString("hex");
@@ -28,7 +38,7 @@ async function login(req, res) {
     console.log(usuario.senha, usuario.salt)
     if (usuario.senha === cryptografaSenha(req.body.senha, usuario.salt)) {
         res.json({
-            token: jwt.sign({ email: usuario.email }, process.env.SECRET, {
+            token: jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
                 expiresIn: "1h",
             }),
         });
@@ -37,4 +47,4 @@ async function login(req, res) {
     }
 }
 
-module.exports = {criar, login}
+module.exports = {criar, login, validarToken}
