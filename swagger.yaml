@@ -9,7 +9,7 @@ paths:
     post:
       summary: Cria uma nova nota
       tags:
-        - Notes
+        - Notas
       requestBody:
         description: Dados da nova nota
         required: true
@@ -23,24 +23,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref:'#components/schemas/Notas'
+                $ref: '#/components/schemas/Notas'
     get:
       summary: Lista todas as notas
       tags:
         - Notas
       responses:
         '200':
-          description: Lista notas
           content:
             application/json:
               schema:
-                $ref: '#components/schemas/ArrayOfNotas'
+                $ref: '#/components/schemas/ArrayOfNotas'
+  /notas/{id}:
+    get:
+      summary: Retorna uma nota pelo ID
+      tags:
+        - Notas
+    
 components:
   schemas:
     ArrayOfNotas: 
       type: array
       items: 
-        $ref:'#components/schemas/Notas'
+        $ref: '#/components/schemas/Notas'
     Notas:
       type: object
       properties:
