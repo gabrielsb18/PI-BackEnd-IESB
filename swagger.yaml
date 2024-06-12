@@ -5,3 +5,21 @@ info:
 tags:
     - notas
 paths:
+  /notes:
+    post:
+      summary: Cria uma nova nota
+      tags:
+        - Notes
+      requestBody:
+        description: Dados da nova nota
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+      responses:
+        '201':
+          description: Nota criada com sucesso
+          content:
+            application/json:
+              schema:
