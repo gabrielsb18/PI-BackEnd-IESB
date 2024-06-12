@@ -36,10 +36,64 @@ paths:
                 $ref: '#/components/schemas/ArrayOfNotas'
   /notas/{id}:
     get:
-      summary: Retorna uma nota pelo ID
       tags:
         - Notas
-    
+      parameters: 
+        - in: path
+          name: id
+          type: string
+      responses: 
+        "200":
+          description: Nota encontrada 
+          content:
+            application/json: 
+              schema: 
+                $ref: '#/components/schemas/Notas'
+        "404": 
+          description: Nota não encontrada
+    put: 
+      tags:
+      - Notas
+      parameters:
+        - in: path
+          type: string
+          name: id
+      requestBody: 
+        content: 
+          application/json: 
+            schema: 
+              $ref: '#/components/schemas/Notas'
+      responses:
+        "200":
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notas'
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notas'
+    delete:
+      tags:
+        - Notas
+      parameters: 
+        - in: path
+          type: string
+          name: id
+      responses:
+        "204":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notas'
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notas'
+
+
 components:
   schemas:
     ArrayOfNotas: 
