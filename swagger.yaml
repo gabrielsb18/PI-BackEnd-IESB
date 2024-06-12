@@ -16,10 +16,36 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Note'
+              $ref: '#/components/schemas/Notas'
       responses:
         '201':
           description: Nota criada com sucesso
           content:
             application/json:
               schema:
+                $ref:'#components/schemas/Notas'
+    get:
+      summary: Lista todas as notas
+      tags:
+        - Notes
+      responses:
+        '200':
+          description: Lista notas
+          content:
+            application/json:
+              schema:
+                $ref:'#components/schemas/Notas':
+components:
+  schemas:
+    Notas:
+      type: object
+      id:
+        type: string
+        example: "1" 
+      titulo:
+        type: string
+        example: Tarefa notas dia de hoje
+      description:
+        type: string
+        example: Descrição da tarefa
+    
