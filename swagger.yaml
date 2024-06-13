@@ -5,7 +5,7 @@ info:
 tags:
     - notas
 paths:
-  /notas:
+  /notes:
     post:
       summary: Cria uma nova nota
       tags:
@@ -24,6 +24,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Notas'
+      security:
+        - JWTAuth: []
+    
     get:
       summary: Lista todas as notas
       tags:
@@ -34,7 +37,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ArrayOfNotas'
-  /notas/{id}:
+  /notes/{id}:
     get:
       tags:
         - Notas
@@ -103,13 +106,10 @@ components:
     Notas:
       type: object
       properties:
-        id:
-          type: string
-          example: "1" 
         titulo:
           type: string
           example: Tarefa notas dia de hoje
-        description:
+        descricao:
           type: string
           example: Descrição da tarefa
     Usuarios:
@@ -121,6 +121,8 @@ components:
         senha:
           type: string
           example: "senha123456_"
-        
-
-      
+    securitySchemes:
+        JWTAuth:
+            type: apikey
+            in: header
+            name: Authorization
