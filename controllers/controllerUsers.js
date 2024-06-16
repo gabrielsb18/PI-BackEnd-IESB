@@ -2,30 +2,59 @@ require("dotenv").config();
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const Usuario = require("../models/model_users");
+const mongoose = require('mongoose');
 
 function cryptografaSenha(senha, salt) {
-    const hash = crypto.createHmac('sha256', salt);
+    const hash = crypto.createHmac("sha256", salt);
     hash.update(senha);
-    return hash.digest('hex');
+    return hash.digest("hex");
 }
 
 async function criar(req, res) {
-    const {email, senha} = req.body;
+    const { email, senha } = req.body;
     const salt = crypto.randomBytes(16).toString("hex");
-    try{
+
+    try {
         const newUsuario = await Usuario.create({
-        email, senha: cryptografaSenha(senha, salt), salt
-    });
-    res.status(201)
-    .json({
-        id: newUsuario._id.toString(),
-        email: newUsuario.email,
-        senha: newUsuario.senha,
-        salt: newUsuario.salt
-    });
-    } catch(error) {
-        res.status(500).json({ error: "Erro ao criar usuário." });
+            email,
+            senha: cryptografaSenha(senha, salt),
+            salt,
+        });
+        res.status(201).json({
+            id: newUsuario._id.toString(),
+            email: newUsuario.email,
+            senha: newUsuario.senha,
+            salt: newUsuario.salt,
+        });
+        
+    } catch (error) {
+        handleError(error, res);
     }
+}
+
+function handleError(error, res) {
+    if (error instanceof mongoose.Error.ValidationError) {
+        const errors = formatarErrosDeValidacao(error);
+        res.status(400).json({ errors });
+    } else {
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+}
+
+function formatarErrosDeValidacao(error) {
+    const errors = {};
+
+    for (let field in error.errors) {
+        if (error.errors.hasOwnProperty(field)) {
+            errors[field] = error.errors[field].message;
+        }
+    }
+
+    if (Object.keys(errors).length === 1) {
+        return Object.values(errors)[0];
+    }
+
+    return errors;
 }
 
 async function login(req, res) {
@@ -34,12 +63,12 @@ async function login(req, res) {
     if (usuario.senha === cryptografaSenha(req.body.senha, usuario.salt)) {
         res.json({
             token: jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
-                expiresIn: '1h'
-            })
+                expiresIn: "1h",
+            }),
         });
     } else {
         res.status(401).json({ msg: "Acesso negado" });
     }
 }
 
-module.exports = {criar, login}
+module.exports = { criar, login };
