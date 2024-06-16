@@ -12,7 +12,8 @@ function cryptografaSenha(senha, salt) {
 async function criar(req, res) {
     const {email, senha} = req.body;
     const salt = crypto.randomBytes(16).toString("hex");
-    const newUsuario = await Usuario.create({
+    try{
+        const newUsuario = await Usuario.create({
         email, senha: cryptografaSenha(senha, salt), salt
     });
     res.status(201)
@@ -22,6 +23,9 @@ async function criar(req, res) {
         senha: newUsuario.senha,
         salt: newUsuario.salt
     });
+    } catch(error) {
+        res.status(500).json({ error: "Erro ao criar usuário." });
+    }
 }
 
 async function login(req, res) {
