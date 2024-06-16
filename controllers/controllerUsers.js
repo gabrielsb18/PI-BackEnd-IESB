@@ -10,11 +10,28 @@ function cryptografaSenha(senha, salt) {
     return hash.digest("hex");
 }
 
+function validaSenha(senha) {
+
+    const errors = 
+    typeof senha !== 'string' ? "A senha deve ser do tipo String" :
+    senha.length < 8 ? "A senha deve ter no minimo 8 caracteres" :
+    /\s/.test(senha) ? "A senha não pode conter espaços em branco" :
+    null;
+
+    return errors;
+}
+
 async function criar(req, res) {
     const { email, senha } = req.body;
     const salt = crypto.randomBytes(16).toString("hex");
 
     try {
+        const errors = validaSenha(senha);
+
+        if (errors) {
+            return res.status(400).json({ errors });
+        }
+
         const newUsuario = await Usuario.create({
             email,
             senha: cryptografaSenha(senha, salt),
