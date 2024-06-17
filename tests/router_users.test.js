@@ -61,4 +61,28 @@ describe("API notes-Usuarios", function(){
         expect(result.type).toBe("application/json");
         expect(result.body).toHaveProperty("msg");
     });
+
+    test("Deve retornar 401 no POST/users/login", async () => {
+        const result = await request.post("/users/login").send({
+            email: "emailqualquer@dominio.com",
+            senha: "Senhaqualquer",
+        });
+        expect(result.status).toBe(401);
+        expect(result.type).toBe("application/json");
+        expect(result.body).toHaveProperty("msg");
+    })
+    
+    test("Deve retornar 500 no POST /users/login", async ()=>{
+        jest.spyOn(Usuario, "findOne").mockImplementation(() => {
+            throw new Errors("Erro interno do servidor");
+        });
+
+        const result = await request.post("/users/login").send({
+            email: "testeDeErroInterno@gmail.com",
+            senha: "SenhaSegura"
+        });
+        expect(result.status).toBe(500);
+        expect(result.type).toBe("application/json");
+        expect(result.body).toHaveProperty("errors");
+    })
 });
