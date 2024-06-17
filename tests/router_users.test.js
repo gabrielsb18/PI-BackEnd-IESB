@@ -42,4 +42,23 @@ describe("API notes-Usuarios", function(){
         expect(result.type).toBe("application/json");
         expect(result.body).toHaveProperty("error");
     })
+
+    test("Deve retornar 200 em caso de sucesso no POST /users/login", async () => {
+        const result = await request.post("/users/login").send({
+            email: "Teste@gmail.com",
+            senha: "teste8181_",
+        });
+        expect(result.status).toBe(200);
+        expect(result.type).toBe("application/json");
+    });
+
+    test("Deve retornar 400 em caso de erro no POST /users/login", async () => {
+        const result = await request.post("/users/login").send({
+            email: "",
+            senha: "teste8181_",
+        });
+        expect(result.status).toBe(400);
+        expect(result.type).toBe("application/json");
+        expect(result.body).toHaveProperty("msg");
+    });
 });
