@@ -27,7 +27,7 @@ async function buscarPeloID(req, res, next) {
         const nota = await Notes.findOne({ _id: id });
         next();
     } catch (err) {
-        res.status(404).json({ msg: "Produto não encontrado" });
+        res.status(404).json({ msg: "Nota não encontrada" });
     }
 }
 
@@ -38,7 +38,7 @@ async function obterNota(req, res, next) {
         res.json(nota);
         next();
     } catch (err) {
-        res.status(404).json({ msg: "Produto não encontrado" });
+        res.status(404).json({ msg: "Nota não encontrado" });
     }
 }
 

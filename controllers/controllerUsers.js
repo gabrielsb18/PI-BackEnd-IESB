@@ -13,7 +13,7 @@ function cryptografaSenha(senha, salt) {
 function validaSenha(senha) {
 
     const errors = 
-    typeof senha !== 'string' ? "A senha deve ser do tipo String" :
+    typeof senha !== 'string' ? "Senha invalida" :
     senha.length < 8 ? "A senha deve ter no minimo 8 caracteres" :
     /\s/.test(senha) ? "A senha não pode conter espaços em branco" :
     null;
@@ -75,16 +75,31 @@ function formatarErrosDeValidacao(error) {
 }
 
 async function login(req, res) {
-    const usuario = await Usuario.findOne({ email: req.body.email });
-    console.log(usuario.senha, usuario.salt);
-    if (usuario.senha === cryptografaSenha(req.body.senha, usuario.salt)) {
-        res.json({
-            token: jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
-                expiresIn: "1h",
-            }),
+    try {
+        if (!req.body.email || !req.body.senha) {
+            return res
+                .status(400)
+                .json({ msg: "Email e senha são obrigatórios" });
+        }
+
+        const usuario = await Usuario.findOne({ email: req.body.email });
+        if (!usuario) {
+            return res.status(401).json({ msg: "Acesso negado" });
+        }
+
+        const senhaValida =
+            usuario.senha === cryptografaSenha(req.body.senha, usuario.salt);
+        if (!senhaValida) {
+            return res.status(401).json({ msg: "Acesso negado" });
+        }
+
+        const token = jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
+            expiresIn: "1h",
         });
-    } else {
-        res.status(401).json({ msg: "Acesso negado" });
+
+        res.json({msg: "Login realizado com sucesso" , token});
+    } catch (error) {
+        res.status(500).json({ errors: "Erro interno no servidor" });
     }
 }
 

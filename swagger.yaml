@@ -11,7 +11,7 @@ paths:
       tags:
         - Notas
       requestBody:
-        description: Dados da nova nota
+        description: Dados da nova Nota
         required: true
         content:
           application/json:
@@ -24,21 +24,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Notas'
-      security:
-        - JWTAuth: []
-    
+        '422':
+          description: Requisição com dados invalidos
+          content:
+            application/json:
+              examples:
+                invalidData:
+                  summary: Dados invalidos
+                  value:
+                    msg: "Dados inválidos!"
+        '401':
+          $ref: '#/components/schemas/InvalidToken'
     get:
       summary: Lista todas as notas
       tags:
         - Notas
       responses:
         '200':
+          description: Lista todas as Notas
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArrayOfNotas'
+                $ref: '#/components/schemas/Array de Notas'
+        '401':
+          $ref: '#/components/schemas/InvalidToken'
+        
   /notes/{id}:
     get:
+      summary: Pega uma nota pelo id
       tags:
         - Notas
       parameters: 
@@ -54,7 +67,14 @@ paths:
                 $ref: '#/components/schemas/Notas'
         "404": 
           description: Nota não encontrada
-    put: 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '401':
+          $ref: '#/components/schemas/InvalidToken'
+    put:
+      summary: Atualiza uma nota pelo id
       tags:
       - Notas
       parameters:
@@ -62,22 +82,37 @@ paths:
           type: string
           name: id
       requestBody: 
+        description: Dados da atualizados Nota especifica
         content: 
           application/json: 
             schema: 
               $ref: '#/components/schemas/Notas'
       responses:
         "200":
+          description: Nota atualizada com sucesso
           content: 
             application/json:
               schema:
                 $ref: '#/components/schemas/Notas'
         "404":
+          description: Nota não encontrada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Notas'
+                $ref: '#/components/schemas/NotFound'
+        "422":
+          description: Requisição com dados invalidos
+          content:
+            application/json:
+              examples:
+                invalidData:
+                  summary: Dados invalidos
+                  value:
+                    msg: "Dados inválidos!"
+        '401':
+          $ref: '#/components/schemas/InvalidToken'
     delete:
+      summary: Deleta uma nota pelo id
       tags:
         - Notas
       parameters: 
@@ -86,20 +121,129 @@ paths:
           name: id
       responses:
         "204":
+          description: Nota deletada com sucesso
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Notas'
         "404":
+          description: Nota não encontrada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Notas'
+                $ref: '#/components/schemas/NotFound'
+        '401':
+          $ref: '#/components/schemas/InvalidToken'
+  /users:
+    post:
+      summary: Cria um novo usuário
+      tags:
+        - Usuarios
+      requestBody:
+        description: Dados do novo usuário
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuarios'
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuarios'
+        '400':
+          description: Requisição com dados invalidos
+          content:
+            application/json:
+              examples:
+                emailInUse:
+                  summary: Email em uso
+                  value:
+                    errors: "Email já cadastrado"
+                emailInvalid:
+                  summary: Email inválido
+                  value:
+                    errors: "Email inválido"
+                emailRequired:
+                  summary: Email é obrigatório
+                  value:
+                    errors: "Obrigatorio o preenchimento do email"
+                emailBlanckSpace:
+                  summary: Email com espaço em branco
+                  value:
+                    errors: "Email não pode conter espaços em branco"
+                passwordRequired:
+                  summary: Senha é obrigatória
+                  value:
+                    errors: "A senha deve ter no minimo 8 caracteres"
+                passwordBlanckSpace:
+                  summary: Senha com espaço em branco
+                  value:
+                    errors: "Senha não pode conter espaços em branco"
+                passwordInvalid:
+                  summary: Senha inválida
+                  value:
+                    errors: "Senha inválida"
+        '500':
+          description: Erro interno no servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalError'
 
+  /users/login:
+    post:
+      summary: Faz login na aplicação
+      tags:
+        - Usuarios
+      requestBody:
+        description: Dados do usuário
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuarios'
+      responses:
+        '200':
+          description: Usuário logado com sucesso
+          content:
+            application/json:
+              examples:
+                login:
+                  summary: Login efetuado
+                  value: 
+                    msg: "Login realizado com sucesso"
+                    token: "token de acesso"
+        '400':
+          description: Dados inválidos
+          content:
+            aplication/json:
+              examples:
+                invalidData:
+                  summary: Dados de acesso inválidos
+                  value:
+                    msg: "Email e senha são obrigatórios"
+        '401':
+          description: Usuário não encontrado ou senha invalida
+          content:
+            application/json:
+              examples:
+                userNotFound:
+                  summary: Acesso negado
+                  value:
+                    msg: "Acesso negado"
+        '500':
+          description: Erro interno no servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalError'
 
 components:
   schemas:
-    ArrayOfNotas: 
+    Array de Notas: 
       type: array
       items: 
         $ref: '#/components/schemas/Notas'
@@ -108,7 +252,7 @@ components:
       properties:
         titulo:
           type: string
-          example: Tarefa notas dia de hoje
+          example: Titulo da Anotação
         descricao:
           type: string
           example: Descrição da tarefa
@@ -120,9 +264,32 @@ components:
           example: "email@gmail.com"
         senha:
           type: string
-          example: "senha123456_"
-    securitySchemes:
-        JWTAuth:
-            type: apikey
-            in: header
-            name: Authorization
+          example: "senha123"
+    InternalError:
+      type: object
+      properties:
+        errors:
+          type: string
+          example: "Erro interno no servidor"
+    NotFound:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: "Nota não encontrada"
+    InvalidToken:
+      description: Não autorizado
+      content:
+        application/json:
+          examples:
+            invalid:
+              summary: Token Ausente
+              value:
+                msg: "ACESSO NEGADO!"
+  securitySchemes:
+      JWTAuth:
+        type: apiKey
+        in: header
+        name: Authorization
+security:
+  - JWTAuth: []
