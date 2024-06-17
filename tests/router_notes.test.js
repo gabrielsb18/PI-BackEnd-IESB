@@ -6,7 +6,7 @@ describe("API Notes - Tarefas diarias", function(){
 
     let id = null;
 
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IlRlc3RlQGdtYWlsLmNvbSIsImlhdCI6MTcxODY0NjU2MiwiZXhwIjoxNzE4NjUwMTYyfQ.mnmKi3PG0KvpYAt-bvjt7HGPTouiw5w8_lIOIBECKMA";
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IlRlc3RlQGdtYWlsLmNvbSIsImlhdCI6MTcxODY1MDY5NCwiZXhwIjoxNzE4NjU0Mjk0fQ.lWTE-vRf6tCXCFrRgjqDyYDJoPXBPKHy1syCC-sungU"
 
     test("Deve retornar 201 no POST /notes", async ()=>{
         const result = await request.post("/notes")
@@ -85,4 +85,6 @@ describe("API Notes - Tarefas diarias", function(){
         expect(result.status).toBe(404);
         expect(result.type).toBe("application/json");
     });
+
+    
 });
