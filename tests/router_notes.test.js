@@ -6,7 +6,7 @@ describe("API Notes - Tarefas diarias", function(){
 
     let id = null;
 
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RlQGdtYWlsLmNvbSIsImlhdCI6MTcxODU2NTc4MywiZXhwIjoxNzE4NTY5MzgzfQ.kZkatcHZetyWtqMBMzZ-61f8rh7AyAb_5k60TQmNbts";
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IlRlc3RlQGdtYWlsLmNvbSIsImlhdCI6MTcxODYzOTQ0MCwiZXhwIjoxNzE4NjQzMDQwfQ.Ro_Tn0M7ODOiiw7xqGWjU-oY8uP77OpFtZubm4XxnYM";
 
     test("Deve retornar 201 no POST /notes", async ()=>{
         const result = await request.post("/notes")
