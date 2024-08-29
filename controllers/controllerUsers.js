@@ -38,6 +38,7 @@ async function criar(req, res) {
             salt,
         });
         res.status(201).json({
+            msg: "Usuario criado com sucesso",
             id: newUsuario._id.toString(),
             email: newUsuario.email,
             senha: newUsuario.senha,
@@ -84,13 +85,13 @@ async function login(req, res) {
 
         const usuario = await Usuario.findOne({ email: req.body.email });
         if (!usuario) {
-            return res.status(401).json({ msg: "Acesso negado" });
+            return res.status(401).json({ msg: "Usuario não encontrado" });
         }
 
         const senhaValida =
             usuario.senha === cryptografaSenha(req.body.senha, usuario.salt);
         if (!senhaValida) {
-            return res.status(401).json({ msg: "Acesso negado" });
+            return res.status(401).json({ msg: "Senha incorreta" });
         }
 
         const token = jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
