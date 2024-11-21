@@ -23,7 +23,7 @@ function validaSenha(senha) {
 }
 
 async function criar(req, res) {
-    const { email, senha } = req.body;
+    const { email, senha, nome } = req.body;
     const salt = crypto.randomBytes(16).toString("hex");
 
     try {
@@ -33,17 +33,18 @@ async function criar(req, res) {
             return res.status(400).json({ errors });
         }
 
-        const newUsuario = await Usuario.create({
+        await Usuario.create({
+            nome,
             email,
             senha: cryptografaSenha(senha, salt),
             salt,
         });
         res.status(201).json({
             msg: "Usuario criado com sucesso",
-            id: newUsuario._id.toString(),
-            email: newUsuario.email,
-            senha: newUsuario.senha,
-            salt: newUsuario.salt,
+            // id: newUsuario._id.toString(),
+            // email: newUsuario.email,
+            // senha: newUsuario.senha,
+            // salt: newUsuario.salt,
         });
 
     } catch (error) {
@@ -95,11 +96,11 @@ async function login(req, res) {
             return res.status(401).json({ msg: "Senha incorreta" });
         }
 
-        const acessToken = jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
+        const acessToken = jwt.sign({ userId: usuario._id, email: usuario.email }, process.env.SEGREDO, {
             expiresIn: "2h",
         });
 
-        const refreshToken = jwt.sign({ email: usuario.email }, process.env.SEGREDO_REFRESH, {
+        const refreshToken = jwt.sign({userId: usuario._id, email: usuario.email }, process.env.SEGREDO_REFRESH, {
             expiresIn: "2d",
         });
 
@@ -111,6 +112,9 @@ async function login(req, res) {
 
         res.json({
             msg: "Login realizado com sucesso" ,
+            email: usuario.email,
+            userId: usuario._id,
+            nome: usuario.nome,
             acessToken,
             refreshToken
         });
@@ -140,7 +144,7 @@ async function renovaToken(req, res){
 
         const payload = jwt.verify(refreshToken, process.env.SEGREDO_REFRESH);
 
-        const newAcessToken = jwt.sign({email:payload.email}, process.env.SEGREDO, {expiresIn: "2h"});
+        const newAcessToken = jwt.sign({email:payload.email, userId: payload.userId}, process.env.SEGREDO, {expiresIn: "2h"});
 
         res.json({acessToken: newAcessToken})
     } catch(error){
@@ -152,4 +156,51 @@ async function renovaToken(req, res){
     }
 }
 
-module.exports = { criar, login, renovaToken};
+// async function obterUser(req, res){
+//     const {userId} = req.params;
+
+//     try {
+//         const user = await Usuario.findById(userId);
+
+//         if(!user){
+//             res.status(404).json({msg: "Usuario não encontrado"});
+//         }
+
+//         return res.json({
+//             email: user.email,
+//             nome: user.nome,
+//             userId: user._id
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({msg: "Erro interno no servidor"});
+//     };
+// }
+
+async function obterUser(req, res) {
+    try {
+        // Verifica se o cabeçalho de autorização está presente
+        const userId = req.userId;
+        // Busca o usuário no banco de dados
+        const user = await Usuario.findById(userId);
+        if (!user) {
+            return res.status(404).json({ msg: "Usuário não encontrado" });
+        }
+
+        // Retorna as informações do usuário
+        return res.json({
+            email: user.email,
+            nome: user.nome,
+            userId: user._id,
+        });
+
+    } catch (error) {
+        console.error("Erro ao obter informações do usuário:", error);
+        if (error.name === "JsonWebTokenError") {
+            return res.status(401).json({ msg: "Token inválido" });
+        }
+        res.status(500).json({ msg: "Erro interno no servidor" });
+    }
+}
+
+module.exports = { criar, login, renovaToken, obterUser};

@@ -14,6 +14,18 @@ const NotesSchema = new mongoose.Schema({
     createdData: {
         type: Date,
         default: Date.now
+    },
+
+    status: {
+        type: String,
+        enum: ['pendente', 'concluida'], // Valores permitidos para o status
+        default: 'pendente' // Valor padrão
+    },
+
+    usuario: { // Adicionando referência ao usuário
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario', // Nome do modelo de usuário
+        required: true // Torna obrigatório
     }
 })
 
