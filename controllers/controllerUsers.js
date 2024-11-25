@@ -140,7 +140,7 @@ async function renovaToken(req, res){
 
         const payload = jwt.verify(refreshToken, process.env.SEGREDO_REFRESH);
 
-        const newAcessToken = jwt.sign({email:payload.email}, process.env.SEGREDO, {expiresIn: "2h"});
+        const newAcessToken = jwt.sign({email:payload.email,  userId: payload.userId}, process.env.SEGREDO, {expiresIn: "2h"});
 
         res.json({acessToken: newAcessToken})
     } catch(error){
