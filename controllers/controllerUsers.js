@@ -92,11 +92,11 @@ async function login(req, res) {
             return res.status(401).json({ msg: "Senha incorreta" });
         }
 
-        const acessToken = jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
+        const acessToken = jwt.sign({userId: usuario._id, email: usuario.email }, process.env.SEGREDO, {
             expiresIn: "2h",
         });
 
-        const refreshToken = jwt.sign({ email: usuario.email }, process.env.SEGREDO_REFRESH, {
+        const refreshToken = jwt.sign({userId: usuario._id, email: usuario.email }, process.env.SEGREDO_REFRESH, {
             expiresIn: "2d",
         });
 
@@ -108,6 +108,9 @@ async function login(req, res) {
 
         res.json({
             msg: "Login realizado com sucesso" ,
+            email: usuario.email,
+            userId: usuario._id,
+            nome: usuario.nome,
             acessToken,
             refreshToken
         });
