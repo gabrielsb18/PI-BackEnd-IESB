@@ -1,9 +1,26 @@
 const mongoose = require("mongoose");
 const Notes = require("../models/model_notes");
 
-async function criar(req, res) {
-    const nota = await Notes.create(req.body);
-    res.status(201).json(nota);
+async function criar (req, res){
+    try {
+        const { titulo, descricao, status } = req.body;
+        const userId = req.body.usuario;
+        
+        if(!userId){
+            return res.status(400).json({msg: "Usuário não informado"})
+        }
+
+        const nota = await Notes.create({
+            titulo,
+            descricao,
+            status,
+            usuario: userId
+        })
+
+        res.status(201).json({msg: "Nota criada com sucesso", nota});
+    } catch (error) {
+        res.status(500).jsom({msg: "Erro ao criar nota", error});
+    }
 }
 
 async function validaDados(req, res, next) {
