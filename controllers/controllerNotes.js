@@ -24,7 +24,13 @@ async function criar (req, res){
 }
 
 async function validaDados(req, res, next) {
-    const nota = new Notes(req.body);
+    const { titulo, descricao, status } = req.body;
+    const usuario = req.userId;
+
+    if (!titulo || !descricao || !status || !usuario) {
+        return res.status(422). json ({msg: "Todos os campos são obrigatórios!"});
+    }
+
     try {
         await nota.validate();
         next();
