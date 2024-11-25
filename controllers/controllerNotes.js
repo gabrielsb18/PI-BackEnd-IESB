@@ -52,7 +52,12 @@ async function obterNota(req, res, next) {
 async function remover(req, res) {
     const id = new mongoose.Types.ObjectId(req.params.id);
     const nota = await Notes.findOneAndDelete({ _id: id });
-    res.status(204).end();
+
+    if (!nota) {
+        return res.status(404).json({ msg: 'Nota não encontrada' });
+    }
+
+    res.status(200).json({ msg: 'Nota excluída com sucesso!'});
 }
 
 async function atualizar(req, res) {
