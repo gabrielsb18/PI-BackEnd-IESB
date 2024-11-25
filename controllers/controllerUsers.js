@@ -2,6 +2,7 @@ require("dotenv").config();
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const Usuario = require("../models/model_users");
+const RefreshToken = require("../models/model_usersToken");
 const mongoose = require('mongoose');
 
 function cryptografaSenha(senha, salt) {
@@ -12,7 +13,7 @@ function cryptografaSenha(senha, salt) {
 
 function validaSenha(senha) {
 
-    const errors = 
+    const errors =
     typeof senha !== 'string' ? "Senha invalida" :
     senha.length < 8 ? "A senha deve ter no minimo 8 caracteres" :
     /\s/.test(senha) ? "A senha não pode conter espaços em branco" :
@@ -44,7 +45,7 @@ async function criar(req, res) {
             senha: newUsuario.senha,
             salt: newUsuario.salt,
         });
-        
+
     } catch (error) {
         handleError(error, res);
     }
@@ -94,14 +95,61 @@ async function login(req, res) {
             return res.status(401).json({ msg: "Senha incorreta" });
         }
 
-        const token = jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
-            expiresIn: "1h",
+        const acessToken = jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
+            expiresIn: "2h",
         });
 
-        res.json({msg: "Login realizado com sucesso" , token});
+        const refreshToken = jwt.sign({ email: usuario.email }, process.env.SEGREDO_REFRESH, {
+            expiresIn: "2d",
+        });
+
+        await RefreshToken.findOneAndUpdate(
+            { User_id: usuario._id },
+            { Token: refreshToken, createdAt: Date.now() },
+            { upsert: true, new: true }
+        );
+
+        res.json({
+            msg: "Login realizado com sucesso" ,
+            acessToken,
+            refreshToken
+        });
+
     } catch (error) {
-        res.status(500).json({ errors: "Erro interno no servidor" });
+        console.error("Erro no login:", error);
+        res.status(500).json({ msg: "Erro interno no servidor" });
     }
 }
 
-module.exports = { criar, login };
+async function renovaToken(req, res){
+    const {refreshToken} = req.body;
+
+    if(!refreshToken){
+        return res.status(409).json({msg: "Refresh Token não fornecido"});
+    }
+
+    try {
+
+        const token = await RefreshToken.findOne({Token: refreshToken});
+
+        if(!token){
+            return res.status(403).json({
+                msg: "Token expirado"
+            })
+        }
+
+        const payload = jwt.verify(refreshToken, process.env.SEGREDO_REFRESH);
+
+        const newAcessToken = jwt.sign({email:payload.email}, process.env.SEGREDO, {expiresIn: "2h"});
+
+        res.json({acessToken: newAcessToken})
+    } catch(error){
+
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ msg: "Token invalido" });
+        }
+
+    }
+}
+
+module.exports = { criar, login, renovaToken};

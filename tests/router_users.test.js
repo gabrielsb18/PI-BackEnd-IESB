@@ -45,8 +45,8 @@ describe("API notes-Usuarios", function(){
 
     test("Deve retornar 200 em caso de sucesso no POST /users/login", async () => {
         const result = await request.post("/users/login").send({
-            email: "Teste@gmail.com",
-            senha: "teste8181_",
+            email: "teste1234@gmail.com",
+            senha: "teste1234@gmail.com",
         });
         expect(result.status).toBe(200);
         expect(result.type).toBe("application/json");
@@ -83,6 +83,6 @@ describe("API notes-Usuarios", function(){
         });
         expect(result.status).toBe(500);
         expect(result.type).toBe("application/json");
-        expect(result.body).toHaveProperty("errors");
+        expect(result.body).toHaveProperty("msg");
     })
 });
