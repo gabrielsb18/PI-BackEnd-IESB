@@ -1,9 +1,26 @@
 const mongoose = require("mongoose");
 const Notes = require("../models/model_notes");
 
-async function criar(req, res) {
-    const nota = await Notes.create(req.body);
-    res.status(201).json(nota);
+async function criar (req, res){
+    try {
+        const { titulo, descricao, status } = req.body;
+        const userId = req.body.usuario;
+        
+        if(!userId){
+            return res.status(400).json({msg: "Usuário não informado"})
+        }
+
+        const nota = await Notes.create({
+            titulo,
+            descricao,
+            status,
+            usuario: userId
+        })
+
+        res.status(201).json({msg: "Nota criada com sucesso", nota});
+    } catch (error) {
+        res.status(500).jsom({msg: "Erro ao criar nota", error});
+    }
 }
 
 async function validaDados(req, res, next) {
@@ -52,14 +69,38 @@ async function obterNota(req, res, next) {
 async function remover(req, res) {
     const id = new mongoose.Types.ObjectId(req.params.id);
     const nota = await Notes.findOneAndDelete({ _id: id });
-    res.status(204).end();
+
+    if (!nota) {
+        return res.status(404).json({ msg: 'Nota não encontrada' });
+    }
+
+    res.status(200).json({ msg: 'Nota excluída com sucesso!'});
 }
 
 async function atualizar(req, res) {
     const id = new mongoose.Types.ObjectId(req.params.id);
-    const nota = await Notes.findOneAndUpdate({ _id: id }, req.body);
-    res.json(nota);
+    const { titulo, descricao, status, usuario } = req.body;
+
+    try {
+
+        const nota = await Notes.findOneAndUpdate(
+            { _id: id },
+            { titulo, descricao, status, usuario },
+            { new: true }
+        );
+
+        if (!nota) {
+            return res.status(404).json({ msg: "Nota não encontrada" });
+        }
+
+        console.log("ID recebido:", req.params.id);
+
+        res.json(nota);
+    } catch (error) {
+        res.status(500).json({ msg: "Erro ao atualizar a nota", error });
+    }
 }
+
 
 module.exports = {
     criar,
