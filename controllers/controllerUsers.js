@@ -23,7 +23,7 @@ function validaSenha(senha) {
 }
 
 async function criar(req, res) {
-    const { email, senha } = req.body;
+    const { email, senha, nome } = req.body;
     const salt = crypto.randomBytes(16).toString("hex");
 
     try {
@@ -33,17 +33,14 @@ async function criar(req, res) {
             return res.status(400).json({ errors });
         }
 
-        const newUsuario = await Usuario.create({
+        await Usuario.create({
+            nome,
             email,
             senha: cryptografaSenha(senha, salt),
             salt,
         });
         res.status(201).json({
             msg: "Usuario criado com sucesso",
-            id: newUsuario._id.toString(),
-            email: newUsuario.email,
-            senha: newUsuario.senha,
-            salt: newUsuario.salt,
         });
 
     } catch (error) {
@@ -95,11 +92,11 @@ async function login(req, res) {
             return res.status(401).json({ msg: "Senha incorreta" });
         }
 
-        const acessToken = jwt.sign({ email: usuario.email }, process.env.SEGREDO, {
+        const acessToken = jwt.sign({userId: usuario._id, email: usuario.email }, process.env.SEGREDO, {
             expiresIn: "2h",
         });
 
-        const refreshToken = jwt.sign({ email: usuario.email }, process.env.SEGREDO_REFRESH, {
+        const refreshToken = jwt.sign({userId: usuario._id, email: usuario.email }, process.env.SEGREDO_REFRESH, {
             expiresIn: "2d",
         });
 
@@ -111,6 +108,9 @@ async function login(req, res) {
 
         res.json({
             msg: "Login realizado com sucesso" ,
+            email: usuario.email,
+            userId: usuario._id,
+            nome: usuario.nome,
             acessToken,
             refreshToken
         });
@@ -140,7 +140,7 @@ async function renovaToken(req, res){
 
         const payload = jwt.verify(refreshToken, process.env.SEGREDO_REFRESH);
 
-        const newAcessToken = jwt.sign({email:payload.email}, process.env.SEGREDO, {expiresIn: "2h"});
+        const newAcessToken = jwt.sign({email:payload.email,  userId: payload.userId}, process.env.SEGREDO, {expiresIn: "2h"});
 
         res.json({acessToken: newAcessToken})
     } catch(error){
