@@ -33,7 +33,7 @@ async function criar(req, res) {
             return res.status(400).json({ errors });
         }
 
-        const newUsuario = await Usuario.create({
+        await Usuario.create({
             nome,
             email,
             senha: cryptografaSenha(senha, salt),
