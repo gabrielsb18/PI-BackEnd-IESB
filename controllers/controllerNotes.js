@@ -32,6 +32,7 @@ async function validaDados(req, res, next) {
     }
 
     try {
+        const nota = new Notes({ titulo, descricao, status, usuario });
         await nota.validate();
         next();
     } catch (err) {
