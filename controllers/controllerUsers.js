@@ -23,7 +23,7 @@ function validaSenha(senha) {
 }
 
 async function criar(req, res) {
-    const { email, senha } = req.body;
+    const { email, senha, nome } = req.body;
     const salt = crypto.randomBytes(16).toString("hex");
 
     try {
@@ -34,16 +34,13 @@ async function criar(req, res) {
         }
 
         const newUsuario = await Usuario.create({
+            nome,
             email,
             senha: cryptografaSenha(senha, salt),
             salt,
         });
         res.status(201).json({
             msg: "Usuario criado com sucesso",
-            id: newUsuario._id.toString(),
-            email: newUsuario.email,
-            senha: newUsuario.senha,
-            salt: newUsuario.salt,
         });
 
     } catch (error) {
