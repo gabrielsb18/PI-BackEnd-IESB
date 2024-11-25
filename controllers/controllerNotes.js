@@ -62,9 +62,28 @@ async function remover(req, res) {
 
 async function atualizar(req, res) {
     const id = new mongoose.Types.ObjectId(req.params.id);
-    const nota = await Notes.findOneAndUpdate({ _id: id }, req.body);
-    res.json(nota);
+    const { titulo, descricao, status, usuario } = req.body;
+
+    try {
+
+        const nota = await Notes.findOneAndUpdate(
+            { _id: id },
+            { titulo, descricao, status, usuario },
+            { new: true }
+        );
+
+        if (!nota) {
+            return res.status(404).json({ msg: "Nota não encontrada" });
+        }
+
+        console.log("ID recebido:", req.params.id);
+
+        res.json(nota);
+    } catch (error) {
+        res.status(500).json({ msg: "Erro ao atualizar a nota", error });
+    }
 }
+
 
 module.exports = {
     criar,
