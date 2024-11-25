@@ -16,9 +16,16 @@ async function validaDados(req, res, next) {
     }
 }
 
-async function listarNotes(req, res) {
-    const notas = await Notes.find({});
-    res.json(notas);
+async function listarNotes(req, res){
+
+    const userId = req.userId;
+
+    try {
+        const notas = await Notes.find({usuario: userId}).populate("usuario");
+        res.json(notas);
+    } catch (error){ 
+        res.status(500).json({msg: "Erro ao listar notas", error});
+    }
 }
 
 async function buscarPeloID(req, res, next) {
