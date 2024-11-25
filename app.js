@@ -6,6 +6,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const cors = require("cors");
 const rateLimit = require('express-rate-limit');
 
 const notesRouter = require('./routes/router_notes')
@@ -15,6 +16,7 @@ const routerDocs = require("./routes/router_docs")
 mongoose.connect(process.env.MONGODB_URL);
 
 var app = express();
+app.use(cors());
 
 const limiter = rateLimit({
     windowMs: 20*60*1000,

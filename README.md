@@ -19,7 +19,6 @@
 *  Excluir uma anotação;
 *  Editar uma anotação;
 *  Criar uma anotação;
-*  Pesquisar notas pelo Titulo;
 *  Fazer login e cadastro e usuário na aplicação;
 
 
@@ -29,20 +28,46 @@
  
   #### 1) Clone o repositório através do link
   
-     git clone 'link'
+     git clone 'link_do_repositorio'
     
   #### 2) Navegue até a pasta API-Notes
   
-     cd .API-Notes
+     cd .PI-BackEnd-IESB
     
  #### 3) Faça a instalação do aquivo node_modules (É necessário ter o Node instalado na máquina)
 
      npm install
+
+ #### 4) Em seguida crie um arquivo .env com as seguintes variaveis:
+
+     MONGODB_URL=
+     SEGREDO=
+     
      
  #### 4) Digite o seguinte comando para testar a aplicação
 
      npm run test
-     
+
+ #### 5) Para rodar a aplicação digite o seguinte codigo
+
+     npm run dev
+
+ #### 6) Para acessar a documentação digite a seguinte URL no navegador
+
+     http://localhost:3000/api-docs
+
+ #### 7) Para gerar um novo Token, e poder acessar as rotas protegidas, realize a seguinte requisiçao com o ThunderClient
+
+     {
+         "email": "email@gmail.com"
+         "senha": "senha123"
+     }
+
+ #### 8) OBS:
+ 
+     Após fazer essa requisição você terá como retorno o Token de acesso, para poder acessar as rotas e fazer requisições pelo Swagger
+ 
+      
 </div>
 
 ## Tecnologias utlizadas:
@@ -53,6 +78,7 @@
  <img src=	"https://img.shields.io/badge/Express.js-404D59?style=for-the-badge">
  <img src=	"https://img.shields.io/badge/Jest-323330?style=for-the-badge&logo=Jest&logoColor=white">
  <img src=	"https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white">
+ <img src=	"https://img.shields.io/badge/Mongoose-880000.svg?style=for-the-badge&logo=Mongoose&logoColor=white">
  <img src=	"https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white">
 </div>
 
