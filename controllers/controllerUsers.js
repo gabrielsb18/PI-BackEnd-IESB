@@ -48,6 +48,31 @@ async function criar(req, res) {
     }
 }
 
+async function obterUser(req, res) {
+    try {
+        const userId = req.userId;
+
+        const user = await Usuario.findById(userId);
+        if (!user) {
+            return res.status(404).json({ msg: "Usuário não encontrado" });
+        }
+
+        return res.json({
+            email: user.email,
+            nome: user.nome,
+            userId: user._id,
+        });
+
+    } catch (error) {
+        if (error.name === "JsonWebTokenError") {
+            return res.status(401).json({ msg: "Token inválido" });
+        }
+
+        res.status(500).json({ msg: "Erro interno no servidor" });
+    }
+}
+
+
 function handleError(error, res) {
     if (error instanceof mongoose.Error.ValidationError) {
         const errors = formatarErrosDeValidacao(error);
@@ -152,4 +177,4 @@ async function renovaToken(req, res){
     }
 }
 
-module.exports = { criar, login, renovaToken};
+module.exports = { criar, login, obterUser, renovaToken};
