@@ -28,7 +28,7 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-app.use("/files", express.static(uploadConfig))
+app.use("/files", express.static(uploadConfig.UPLOADS_FOLDER))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
