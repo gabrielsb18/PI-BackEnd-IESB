@@ -8,6 +8,7 @@ var logger = require('morgan');
 
 const cors = require("cors");
 const rateLimit = require('express-rate-limit');
+const uploadConfig = require("./config/upload")
 
 const notesRouter = require('./routes/router_notes')
 const usersRouter = require("./routes/router_users")
@@ -27,6 +28,7 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+app.use("/files", express.static(uploadConfig))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
