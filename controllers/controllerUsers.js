@@ -48,31 +48,43 @@ async function criar(req, res) {
     }
 }
 
-async function atualizar(req, res){
-    const {email, nome} = req.body;
+async function atualizar(req, res) {
+    const { email, nome, senha, senha_antiga } = req.body;
 
     try {
-    
+
         const userId = req.userId;
 
         const user = await Usuario.findById(userId)
 
-        if(!user){
-            return res.status(404).json({msg: "Usuario não encontrado"})
+        if (!user) {
+            return res.status(404).json({ msg: "Usuario não encontrado" })
         }
 
-        const userWithUpdatedEmail = await Usuario.findOne({email});
+        const userWithUpdatedEmail = await Usuario.findOne({ email });
 
-        if(userWithUpdatedEmail && userWithUpdatedEmail._id.toString() !== userId){
-            return res.status(400).json({msg: "Email já cadastrado"})
+        if (userWithUpdatedEmail && userWithUpdatedEmail._id.toString() !== userId) {
+            return res.status(400).json({ msg: "Email já cadastrado" })
         }
 
-        const updateUser = await Usuario.findOneAndUpdate({_id: userId}, {email, nome}, {new: true});
+        if (senha && !senha_antiga) {
+            return res.status(400).json({ msg: "Você precisa informar a senha antiga" })
+        }
 
-        return res.status(200).json({msg: "Usuario atualizado com sucesso"});
+        if (senha && senha_antiga) {
+            const senhaValida = user.senha === cryptografaSenha(senha_antiga, user.salt);
+
+            if (!senhaValida) {
+                return res.status(400).json({ msg: "Senha antiga inválida" })
+            }
+        }
+
+        const updateUser = await Usuario.findOneAndUpdate({ _id: userId }, { email, nome, senha: cryptografaSenha(senha, user.salt) }, { new: true });
+
+        return res.status(200).json({ msg: "Usuario atualizado com sucesso" });
 
     } catch (error) {
-        return res.status(500).json({msg: "Erro ao atualizar usuario"})
+        return res.status(500).json({ msg: "Erro ao atualizar usuario" })
     }
 }
 
