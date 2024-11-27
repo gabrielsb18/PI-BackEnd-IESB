@@ -48,6 +48,34 @@ async function criar(req, res) {
     }
 }
 
+async function atualizar(req, res){
+    const {email, nome} = req.body;
+
+    try {
+    
+        const userId = req.userId;
+
+        const user = await Usuario.findById(userId)
+
+        if(!user){
+            return res.status(404).json({msg: "Usuario não encontrado"})
+        }
+
+        const userWithUpdatedEmail = await Usuario.findOne({email});
+
+        if(userWithUpdatedEmail && userWithUpdatedEmail._id.toString() !== userId){
+            return res.status(400).json({msg: "Email já cadastrado"})
+        }
+
+        const updateUser = await Usuario.findOneAndUpdate({_id: userId}, {email, nome}, {new: true});
+
+        return res.status(200).json({msg: "Usuario atualizado com sucesso"});
+
+    } catch (error) {
+        return res.status(500).json({msg: "Erro ao atualizar usuario"})
+    }
+}
+
 async function obterUser(req, res) {
     try {
         const userId = req.userId;
@@ -108,7 +136,7 @@ async function login(req, res) {
 
         const usuario = await Usuario.findOne({ email: req.body.email });
         if (!usuario) {
-            return res.status(401).json({ msg: "Usuario não encontrado" });
+            return res.status(404).json({ msg: "Usuario não encontrado" });
         }
 
         const senhaValida =
@@ -133,6 +161,7 @@ async function login(req, res) {
 
         res.json({
             msg: "Login realizado com sucesso" ,
+            avatar: usuario.avatar,
             email: usuario.email,
             userId: usuario._id,
             nome: usuario.nome,
@@ -177,4 +206,4 @@ async function renovaToken(req, res){
     }
 }
 
-module.exports = { criar, login, obterUser, renovaToken};
+module.exports = { criar, login, obterUser, renovaToken, atualizar};
