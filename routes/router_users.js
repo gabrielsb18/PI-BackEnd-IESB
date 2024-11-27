@@ -12,7 +12,7 @@ const controllerUsersAvatar = new ControllerUsersAvatar();
 
 router.get("/", middleware.validaToken, controller.obterUser);
 router.patch("/avatar", middleware.validaToken, upload.single("avatar"), controllerUsersAvatar.update);
-router.put("/:id", middleware.validaToken, controller.atualizar);
+router.put("/", middleware.validaToken, controller.atualizar);
 router.post("/", controller.criar);
 router.post("/login", controller.login);
 router.post("/renovar", controller.renovaToken)
