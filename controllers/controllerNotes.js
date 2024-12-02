@@ -129,12 +129,6 @@ async function pesquisaNotas(req, res) {
                 {descricao: { $regex: term, $options: "i" }}
             ]
         })
-
-        if (notes.length === 0) {
-            return res.status(404).json({
-                msg: "Nenhuma nota encontrada"
-            });
-        }
         
         res.status(200).json(notes);
 
