@@ -52,9 +52,8 @@ async function atualizar(req, res) {
     const { email, nome, senha, senha_antiga } = req.body;
 
     try {
-
-        const userId = req.userId;
-
+        const userId = req.params.id;
+        
         const user = await Usuario.findById(userId)
 
         if (!user) {
@@ -79,9 +78,15 @@ async function atualizar(req, res) {
             }
         }
 
-        const updateUser = await Usuario.findOneAndUpdate({ _id: userId }, { email, nome, senha: cryptografaSenha(senha, user.salt) }, { new: true });
+        const updateData = { email, nome };
 
-        return res.status(200).json({ msg: "Usuario atualizado com sucesso" });
+        if (senha) {
+            updateData.senha = cryptografaSenha(senha, user.salt);
+        }
+
+        const updateUser = await Usuario.findOneAndUpdate({ _id: userId }, updateData, { new: true });
+
+        return res.status(200).json({ msg: "Usuario atualizado com sucesso", email:updateUser.email, nome: updateUser.nome });
 
     } catch (error) {
         return res.status(500).json({ msg: "Erro ao atualizar usuario" })
@@ -98,6 +103,7 @@ async function obterUser(req, res) {
         }
 
         return res.json({
+            avatar: user.avatar,
             email: user.email,
             nome: user.nome,
             userId: user._id,
