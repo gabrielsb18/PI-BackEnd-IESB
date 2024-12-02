@@ -3,7 +3,8 @@ const middleware = require("../middlewares/validatoken");
 const express = require("express");
 const router = express.Router();
 
-router.get("/:userId", middleware.validaToken,controller.listarNotes);
+router.get("/", middleware.validaToken,controller.listarNotes);
+router.get("/search", middleware.validaToken, controller.pesquisaNotas);
 router.get("/:id", middleware.validaToken, controller.buscarPeloID, controller.obterNota);
 router.post("/", middleware.validaToken, controller.validaDados,controller.criar);
 router.put("/:id", middleware.validaToken, controller.buscarPeloID, controller.validaDados, controller.atualizar);

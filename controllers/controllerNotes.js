@@ -101,11 +101,39 @@ async function atualizar(req, res) {
             return res.status(404).json({ msg: "Nota não encontrada" });
         }
 
-        console.log("ID recebido:", req.params.id);
-
         res.json(nota);
     } catch (error) {
         res.status(500).json({ msg: "Erro ao atualizar a nota", error });
+    }
+}
+
+async function pesquisaNotas(req, res) {
+    const userId = req.userId;
+    const { term } = req.query;
+
+    if(!term){
+        return res.status(400).json({
+            msg: "Informe um termo para pesquisa"
+        });
+    }
+
+    if(!userId){
+        return res.status(400).json({msg: "Usuário não informado"})
+    }
+
+    try {
+        const notes = await Notes.find({
+            usuario: userId,
+            $or: [
+                {titulo: { $regex: term, $options: "i" }},
+                {descricao: { $regex: term, $options: "i" }}
+            ]
+        })
+        
+        res.status(200).json(notes);
+
+    } catch(error) {
+        res.status(500).json({msg: "Erro ao pesquisar notas", error});
     }
 }
 
@@ -115,6 +143,7 @@ module.exports = {
     listarNotes,
     buscarPeloID,
     obterNota,
+    pesquisaNotas,
     remover,
     atualizar,
     validaDados,
