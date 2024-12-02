@@ -24,7 +24,7 @@ class controllerUsersAvatar {
 
         await Usuario.findOneAndUpdate({ _id: userId }, { avatar: filename });
 
-        return res.json(user)
+        return res.status(201).json({msg: "Foto atualizada com sucesso", user})
     }
 }
 
