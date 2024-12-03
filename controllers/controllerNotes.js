@@ -137,6 +137,23 @@ async function pesquisaNotas(req, res) {
     }
 }
 
+async function totalNotas (req, res){
+    try {
+        const userId = req.userId;
+
+        if(!userId){
+            return res.status(400).json({msg: "Usuário não informado"});
+        }
+
+        const pendente = await Notes.countDocuments({usuario: userId, status: "pendente"});
+        const concluida = await Notes.countDocuments({usuario: userId, status: "concluida"});
+
+        return res.status(200).json({ pendente, concluida });
+    } catch(error) {
+        return res.status(500).json({msg: "Erro ao buscar quantidade de notas", error});
+    }
+}
+
 
 module.exports = {
     criar,
@@ -144,6 +161,7 @@ module.exports = {
     buscarPeloID,
     obterNota,
     pesquisaNotas,
+    totalNotas,
     remover,
     atualizar,
     validaDados,
