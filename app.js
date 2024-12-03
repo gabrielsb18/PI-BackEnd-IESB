@@ -21,7 +21,7 @@ app.use(cors());
 
 const limiter = rateLimit({
     windowMs: 20*60*1000,
-    max: 200,
+    max: 3000,
     message: {error: "Limite de requisições excedido, tente novamente mais tarde"},
     headers: true,
 })
