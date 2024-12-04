@@ -160,7 +160,7 @@ async function login(req, res) {
         const senhaValida =
             usuario.senha === cryptografaSenha(req.body.senha, usuario.salt);
         if (!senhaValida) {
-            return res.status(401).json({ msg: "Senha incorreta" });
+            return res.status(401).json({ msg: "Email ou senha estão incorretos" });
         }
 
         const acessToken = jwt.sign({userId: usuario._id, email: usuario.email }, process.env.SEGREDO, {
