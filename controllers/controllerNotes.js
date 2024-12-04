@@ -101,7 +101,7 @@ async function atualizar(req, res) {
             return res.status(404).json({ msg: "Nota não encontrada" });
         }
 
-        res.json(nota);
+        res.json({msg: "Nota atualizada com sucesso", nota});
     } catch (error) {
         res.status(500).json({ msg: "Erro ao atualizar a nota", error });
     }
