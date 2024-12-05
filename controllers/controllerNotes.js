@@ -46,7 +46,7 @@ async function listarNotes(req, res){
     const userId = req.userId;
 
     try {
-        const notas = await Notes.find({usuario: userId}).populate("usuario");
+        const notas = await Notes.find({usuario: userId}).sort({ createdAt: -1 }).populate("usuario");
         res.json(notas);
     } catch (error){ 
         res.status(500).json({msg: "Erro ao listar notas", error});
