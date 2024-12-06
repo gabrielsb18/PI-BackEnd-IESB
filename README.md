@@ -20,6 +20,9 @@
 *  Editar uma anotação;
 *  Criar uma anotação;
 *  Fazer login e cadastro e usuário na aplicação;
+*  Pesquisar entre todas anotações
+*  Fazer upload de imagem
+*  Buscar dados dos usuários
 
 
 ## Como Rodar o app:
@@ -28,7 +31,7 @@
  
   #### 1) Clone o repositório através do link
   
-     git clone 'link_do_repositorio'
+     git clone 'https://github.com/gabrielsb18/PI-BackEnd-IESB'
     
   #### 2) Navegue até a pasta API-Notes
   
@@ -42,6 +45,7 @@
 
      MONGODB_URL=
      SEGREDO=
+     SEGREDO_REFRESH=
      
      
  #### 4) Digite o seguinte comando para testar a aplicação
