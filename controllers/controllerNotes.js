@@ -15,6 +15,7 @@ async function criar (req, res){
             titulo,
             descricao,
             status,
+            _id: new mongoose.Types.ObjectId(),
             usuario: userId
         })
 
