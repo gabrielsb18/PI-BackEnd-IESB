@@ -15,6 +15,7 @@ async function criar (req, res){
             titulo,
             descricao,
             status,
+            _id: new mongoose.Types.ObjectId(),
             usuario: userId
         })
 
@@ -82,7 +83,7 @@ async function remover(req, res) {
         return res.status(404).json({ msg: 'Nota não encontrada' });
     }
 
-    res.status(200).json({ msg: 'Nota excluída com sucesso!'});
+    res.status(204).json({ msg: 'Nota excluída com sucesso!'});
 }
 
 async function atualizar(req, res) {
