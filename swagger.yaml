@@ -134,6 +134,55 @@ paths:
                 $ref: '#/components/schemas/NotFound'
         '401':
           $ref: '#/components/schemas/InvalidToken'
+  /notes/search:
+    get:
+      summary: Busca as notas pelo titulo ou descrição
+      tags:
+        - Notas
+      parameters:
+        - in: query
+          name: search
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Lista de notas encontradas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Array de Notas'
+        "400":
+          description: Nenhum termo informado para pesquisa
+          content:
+            application/json:
+              examples:
+                invalidData:
+                  summary: Dados invalidos
+                  value:
+                    msg: "Informe um termo para pesquisa"  
+        '401':
+          $ref: '#/components/schemas/InvalidToken'
+  /notes/totals:
+    get:
+      summary: Retorna a quantidade total de notas pendentes e concluidas
+      tags:
+        - Notas
+      responses:
+        '200':
+          description: Quantidade total de notas pendentes e concluidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pendente:
+                    type: integer
+                    example: 10
+                  concluida:
+                    type: integer
+                    example: 5
+        '401':
+          $ref: '#/components/schemas/InvalidToken'
   /users:
     post:
       summary: Cria um novo usuário
