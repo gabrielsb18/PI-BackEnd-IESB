@@ -90,7 +90,7 @@ describe("API notes-Usuarios", function(){
         })
         expect(result.status).toBe(400);
         expect(result.type).toBe("application/json");
-        expect(result.body).toHaveProperty("msg", "Você precisa informar a senha antiga");
+        expect(result.body).toHaveProperty("msg", "Você precisa informar sua senha antiga");
     })
 
     test("Deve retornar 400 no PUT /users/id caso a senha antiga esteja incorreta", async() => { 
@@ -114,6 +114,6 @@ describe("API notes-Usuarios", function(){
         })
         expect(result.status).toBe(200);
         expect(result.type).toBe("application/json");
-        expect(result.body).toHaveProperty("msg", "Usuario atualizado com sucesso");
+        expect(result.body).toHaveProperty("msg", "Usuário atualizado com sucesso");
     })
 }); 
