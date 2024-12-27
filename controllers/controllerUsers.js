@@ -67,7 +67,7 @@ async function atualizar(req, res) {
         }
 
         if (senha && !senha_antiga) {
-            return res.status(400).json({ msg: "Você precisa informar a senha antiga" })
+            return res.status(400).json({ msg: "Você precisa informar sua senha antiga" })
         }
 
         if (senha && senha_antiga) {
@@ -86,10 +86,10 @@ async function atualizar(req, res) {
 
         const updateUser = await Usuario.findOneAndUpdate({ _id: userId }, updateData, { new: true });
 
-        return res.status(200).json({ msg: "Usuario atualizado com sucesso", email:updateUser.email, nome: updateUser.nome });
+        return res.status(200).json({ msg: "Usuário atualizado com sucesso", email:updateUser.email, nome: updateUser.nome });
 
     } catch (error) {
-        return res.status(500).json({ msg: "Erro ao atualizar usuario" })
+        return res.status(500).json({ msg: "Erro ao atualizar usuário" })
     }
 }
 
@@ -102,7 +102,7 @@ async function obterUser(req, res) {
             return res.status(404).json({ msg: "Usuário não encontrado" });
         }
 
-        return res.json({
+        return res.status(200).json({
             avatar: user.avatar,
             email: user.email,
             nome: user.nome,
@@ -197,7 +197,7 @@ async function renovaToken(req, res){
     const {refreshToken} = req.body;
 
     if(!refreshToken){
-        return res.status(409).json({msg: "Refresh Token não fornecido"});
+        return res.status(400).json({msg: "Refresh Token não fornecido"});
     }
 
     try {
@@ -206,7 +206,7 @@ async function renovaToken(req, res){
 
         if(!token){
             return res.status(403).json({
-                msg: "Token expirado"
+                msg: "Token inválido"
             })
         }
 
@@ -214,11 +214,11 @@ async function renovaToken(req, res){
 
         const newAcessToken = jwt.sign({email:payload.email,  userId: payload.userId}, process.env.SEGREDO, {expiresIn: "2h"});
 
-        res.json({acessToken: newAcessToken})
+        res.status(200).json({acessToken: newAcessToken})
     } catch(error){
 
         if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ msg: "Token invalido" });
+            return res.status(401).json({ msg: "Token expirado" });
         }
 
     }
