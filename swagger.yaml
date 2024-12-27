@@ -36,7 +36,7 @@ paths:
         '401':
           $ref: '#/components/schemas/InvalidToken'
     get:
-      summary: Lista todas as notas
+      summary: Lista todas as notas do usuario
       tags:
         - Notas
       responses:
@@ -289,6 +289,196 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalError'
+  /users/renovar:
+    post:
+      summary: Renova o token de acesso
+      tags:
+        - Usuarios
+      requestBody:
+        description: Token de atualização
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: "token de atualização"
+      responses:
+          '200':
+            description: Token renovado com sucesso
+            content:
+              application/json:
+                examples:
+                  token:
+                    summary: Token renovado
+                    value:
+                      acessToken: "novo token de acesso"
+          '401':
+            description: Token expirado
+            content:
+              application/json:
+                examples:
+                  invalidToken:
+                    summary: Token expirado
+                    value:
+                      msg: "Token expirado"
+          '400':
+            description: Token de atualização não fornecido
+            content:
+                application/json:
+                    examples:
+                        missingToken:
+                            summary: Token não fornecido
+                            value:
+                                msg: "Refresh Token não fornecido"
+          '403':
+            description: token de atualização inválido
+            content:
+                application/json:
+                    examples:
+                        invalidToken:
+                            summary: Token inválido
+                            value:
+                                msg: "Token inválido"
+  /uses/:
+    get:
+      summary: Retorna os dados do usuário logado
+      tags:
+        - Usuarios
+      responses:
+        '200':
+          description: Dados do usuário retornados com sucesso
+          content:
+            application/json:
+              examples:
+                user:
+                  summary: Dados do usuário retornados com sucesso
+                  value:
+                    avatar: "avatar do usuário"
+                    email: "email do usuário"
+                    nome: "nome do usuário"
+                    userId: "id do usuário"
+        '404':
+          description: Usuário não encontrado
+          content:
+            application/json:
+              examples:
+                userNotFound:
+                  summary: Usuário não encontrado
+                  value:
+                    msg: "Usuário não encontrado"
+        '401':
+          description: Token de usuario inválido
+          content:
+            application/json:
+              examples:
+                invalidToken:
+                  summary: Token inválido
+                  value:
+                    msg: "Token inválido"
+  /users/avatar:
+    patch:
+      summary: Atualiza o avatar do usuário
+      tags:
+        - Usuarios
+      requestBody:
+        description: Avatar do usuário
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Foto atualizada com sucesso
+          content:
+            application/json:
+              examples:
+                avatar:
+                  summary: Avatar atualizado
+                  value:
+                    avatar: "avatar do usuário"
+        '401':
+          description: Token de usuario inválido
+          content:
+              application/json:
+                examples:
+                  invalidToken:
+                    summary: Token inválido
+                    value:
+                      msg: "Somente usuários autenticados podem mudar o avatar" 
+  /users/:
+    put:
+      summary: Atualiza os dados do usuário
+      tags:
+        - Usuarios
+      requestBody:
+        description: Dados do usuário
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                  example: "Ciclano"
+                email:
+                  type: string
+                  example: "ciclano@gmail.com"
+                senha_antiga:
+                  type: string
+                  example: "Senha123_"
+                senha:
+                  type: string
+                  example: "NovaSenha123_"
+      responses:
+        '200':
+          description: Dados do usuário atualizados com sucesso
+          content:
+            application/json:
+              examples:
+                user:
+                  summary: Dados do usuário atualizados
+                  value:
+                    msg: "Usuário atualizado com sucesso"
+                    email: "ciclano@gmail.com"
+                    nome: "Ciclano"
+        '404':
+          description: Usuário não encontrado
+          content:
+            application/json:
+              examples:
+                userNotFound:
+                  summary: Usuário não encontrado
+                  value:
+                    msg: "Usuário não encontrado"
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              examples:
+                emailInUse:
+                  summary: Endereço de email já cadastrado
+                  value:
+                    msg: "Email já cadastrado"
+                passwordInvalid:
+                  summary: A senha não foi informada
+                  value:
+                    msg: "Você precisa informar sua senha antiga"
+                passwordIncorrect:
+                  summary: A senha inserida está incorreta
+                  value:
+                    msg: "Senha antiga invalida"
+                
+         
+  
 
 components:
   schemas:
