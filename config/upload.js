@@ -4,8 +4,6 @@ const crypto = require('crypto');
 
 const TMP_FOLDER = path.resolve(__dirname, "..", "tmp");
 
-const UPLOADS_FOLDER = path.resolve(TMP_FOLDER, "uploads")
-
 const MULTER = {
     storage: multer.diskStorage({
         destination: TMP_FOLDER,
@@ -21,5 +19,4 @@ const MULTER = {
 module.exports = {
     MULTER,
     TMP_FOLDER,
-    UPLOADS_FOLDER,
 }
