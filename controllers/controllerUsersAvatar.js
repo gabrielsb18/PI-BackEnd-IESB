@@ -15,10 +15,10 @@ async function updateUserAvatar(req, res) {
         await DiskStorage.deleteFile(user.avatar);
     }
 
-    const filename = await DiskStorage.saveFile(avatarFilename);
-    user.avatar = filename;
+    const publicUrl = await DiskStorage.saveFile(avatarFilename);
+    user.avatar = publicUrl ;
 
-    await Usuario.findOneAndUpdate({ _id: userId }, { avatar: filename });
+    await Usuario.findOneAndUpdate({ _id: userId }, { avatar: publicUrl });
 
     return res.status(201).json({ msg: "Foto atualizada com sucesso", user })
 }
