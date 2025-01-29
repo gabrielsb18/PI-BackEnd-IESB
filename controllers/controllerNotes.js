@@ -83,7 +83,7 @@ async function remover(req, res) {
         return res.status(404).json({ msg: 'Nota não encontrada' });
     }
 
-    res.status(204).json({ msg: 'Nota excluída com sucesso!'});
+    res.status(204).end();
 }
 
 async function atualizar(req, res) {
