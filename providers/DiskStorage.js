@@ -18,18 +18,18 @@ async function saveFile(file) {
         throw new Error(`Erro ao salvar arquivos: ${error.message}`);
     }
 
-    const { data: { publicUrl } } = supabase.storage
+    supabase.storage
         .from("avatars-notes")
         .getPublicUrl(data.path);
 
     await fs.promises.unlink(filePath);
 
-    return publicUrl;
+    return data.path;
 }
 
-async function deleteFile(filePath) {
+async function deleteFile(fileName) {
     const { error } = await supabase.storage.from('avatars-notes')
-        .remove([filePath]);
+        .remove([fileName]);
 
     if (error) {
         throw new Error(`Erro ao deletar arquivo: ${error.message}`);
