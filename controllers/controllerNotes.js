@@ -92,9 +92,19 @@ async function atualizar(req, res) {
 
     try {
 
+        let updateFields = { titulo, descricao, status, usuario };
+
+        if (status === "concluida") {
+            updateFields.completedAt = new Date();
+        } 
+        
+        if (status === "pendente") {
+            updateFields.completedAt = null;
+        }
+
         const nota = await Notes.findOneAndUpdate(
             { _id: id },
-            { titulo, descricao, status, usuario },
+            { $set: updateFields },
             { new: true }
         );
 
@@ -213,6 +223,7 @@ module.exports = {
     obterNota,
     pesquisaNotas,
     totalNotas,
+    notasSemana,
     remover,
     atualizar,
     validaDados,
