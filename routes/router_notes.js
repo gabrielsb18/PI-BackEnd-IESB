@@ -6,6 +6,7 @@ const router = express.Router();
 router.get("/", middleware.validaToken,controller.listarNotes);
 router.get("/search", middleware.validaToken, controller.pesquisaNotas);
 router.get("/totals", middleware.validaToken, controller.totalNotas);
+router.get("/notesofweek", middleware.validaToken, controller.notasSemana)
 router.get("/:id", middleware.validaToken, controller.buscarPeloID, controller.obterNota);
 router.post("/", middleware.validaToken, controller.validaDados,controller.criar);
 router.put("/:id", middleware.validaToken, controller.buscarPeloID, controller.validaDados, controller.atualizar);
