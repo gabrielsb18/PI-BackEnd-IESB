@@ -92,9 +92,19 @@ async function atualizar(req, res) {
 
     try {
 
+        let updateFields = { titulo, descricao, status, usuario };
+
+        if (status === "concluida") {
+            updateFields.completedAt = new Date();
+        } 
+        
+        if (status === "pendente") {
+            updateFields.completedAt = null;
+        }
+
         const nota = await Notes.findOneAndUpdate(
             { _id: id },
-            { titulo, descricao, status, usuario },
+            { $set: updateFields },
             { new: true }
         );
 
@@ -155,6 +165,56 @@ async function totalNotas (req, res){
     }
 }
 
+async function notasSemana (req, res){    
+    try {
+        const userId = req.userId;
+    
+        if(!userId){
+            return res.status(400).json({msg: "Usuário não informado"});
+        }
+
+        const hoje = new Date();
+        const diaSemana = hoje.getDay();
+
+        const inicioSemana = new Date(hoje);
+        inicioSemana.setDate(hoje.getDate() - diaSemana);
+
+
+        const notas = await Notes.aggregate([
+            {
+                $match: {
+                    usuario: new mongoose.Types.ObjectId(userId),
+                    status: "concluida",
+                    completedAt: {$gte: inicioSemana,  $lte: hoje}
+                }
+            },
+            {
+                $group: {
+                    _id: {$dayOfWeek: "$completedAt"},
+                    total: {$sum: 1},
+                },
+            },
+            {
+                $sort: {
+                    "_id": 1,
+                }
+            }
+        ])
+
+        const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+        const resultado = notas.map(nota => ({
+            dia: diasSemana[nota._id - 1],
+            total: nota.total
+        }));
+
+        res.status(200).json(resultado)
+
+    } catch(error){
+        res.status(500).json({ error: "Erro ao buscar dados" });
+    }
+}
+
 
 module.exports = {
     criar,
@@ -163,6 +223,7 @@ module.exports = {
     obterNota,
     pesquisaNotas,
     totalNotas,
+    notasSemana,
     remover,
     atualizar,
     validaDados,

@@ -15,6 +15,11 @@ const NotesSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    
+    completedAt: { 
+        type: Date, 
+        required: false 
+    },
 
     status: {
         type: String,
