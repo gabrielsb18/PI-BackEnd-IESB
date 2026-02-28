@@ -9,10 +9,11 @@ const uploadConfig = require("../config/upload");
 const upload = multer(uploadConfig.MULTER)
 
 router.get("/", middleware.validaToken, controller.obterUser);
+router.get("/avatar/:file", middleware.validaToken, controllerAvatar.showAvatar);
 router.patch("/avatar", middleware.validaToken, upload.single("avatar"), controllerAvatar.updateUserAvatar);
 router.put("/:id", middleware.validaToken, controller.atualizar);
 router.post("/", controller.criar);
 router.post("/login", controller.login);
 router.post("/renovar", controller.renovaToken)
 
-module.exports= router;
+module.exports = router;
