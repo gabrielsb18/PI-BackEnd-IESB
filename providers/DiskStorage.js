@@ -4,13 +4,13 @@ const uploadConfig = require("../config/upload")
 const { supabase } = require("../config/supabaseClient");
 
 async function saveFile(file) {
-    const filePath = path.resolve(uploadConfig.TMP_FOLDER, file);
+    const filePath = path.resolve(uploadConfig.TMP_FOLDER, file.filename);
 
     const fileBuffer = await fs.promises.readFile(filePath);
 
     const { data, error } = await supabase.storage.from('avatars-notes')
-        .upload(`uploads/${file}`, fileBuffer, {
-            contentType: 'image/jpg, image/png, image/jpeg',
+        .upload(`uploads/${file.filename}`, fileBuffer, {
+            contentType: file.mimetype,
             upsert: true,
         });
 
@@ -18,13 +18,21 @@ async function saveFile(file) {
         throw new Error(`Erro ao salvar arquivos: ${error.message}`);
     }
 
-    supabase.storage
-        .from("avatars-notes")
-        .getPublicUrl(data.path);
-
     await fs.promises.unlink(filePath);
 
     return data.path;
+}
+
+async function downloadFile(fileName) {
+    const { data, error } = await supabase.storage
+        .from('avatars-notes')
+        .download(fileName);
+
+    if (error) {
+        throw new Error(`Erro ao baixar arquivo: ${error.message}`);
+    }
+
+    return data;
 }
 
 async function deleteFile(fileName) {
@@ -36,4 +44,4 @@ async function deleteFile(fileName) {
     }
 }
 
-module.exports = { saveFile, deleteFile };
+module.exports = { saveFile, deleteFile, downloadFile };
