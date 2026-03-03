@@ -118,3 +118,10 @@ dist
 .pnp.*
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
+
+# Archives of Gemini-CLI
+.geminiignore
+GEMINI.md
+
+# Mock dataset visualization
+insert_mock_notes.js
