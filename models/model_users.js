@@ -35,13 +35,21 @@ const userSchema = new mongoose.Schema({
         ],
         match: [/\S+@\S+\.\S+/, "Email inválido"],
     },
+    authProvider: {
+        type: String,
+        enum: ['local', 'google'],
+        default: 'local'
+    },
     senha: {
         type: String,
-        required: [true, "Senha é obrigatória"],
+        required: [function() { return this.authProvider === 'local'; }, "Senha é obrigatória"],
         minLength: [8, "A senha deve conter no mínimo 8 caracteres"],
         trim: true,
     },
-    salt: { type: String, required: true },
+    salt: { 
+        type: String, 
+        required: function() { return this.authProvider === 'local'; } 
+    },
 });
 
 module.exports = mongoose.model("Usuario", userSchema);
