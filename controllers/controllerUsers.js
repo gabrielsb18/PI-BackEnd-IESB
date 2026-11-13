@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const Usuario = require("../models/model_users");
 const RefreshToken = require("../models/model_usersToken");
 const mongoose = require('mongoose');
+const { supabase } = require("../config/supabaseClient");
 
 function cryptografaSenha(senha, salt) {
     const hash = crypto.createHmac("sha256", salt);
@@ -188,7 +189,6 @@ async function login(req, res) {
         });
 
     } catch (error) {
-        console.error("Erro no login:", error);
         res.status(500).json({ msg: "Erro interno no servidor" });
     }
 }
@@ -224,4 +224,49 @@ async function renovaToken(req, res){
     }
 }
 
-module.exports = { criar, login, obterUser, renovaToken, atualizar};
+async function loginOAuthGoogle(req, res) {
+    try {
+        const { access_token } = req.body;
+        if (!access_token) return res.status(400).json({ msg: "Access token é obrigatório" });
+        if (!supabase) return res.status(500).json({ msg: "Supabase client não configurado" });
+
+        const { data, error } = await supabase.auth.getUser(access_token);
+        if (error || !data || !data.user) return res.status(401).json({ msg: "Token inválido ou expirado" });
+
+        const email = data.user.email;
+        const nome = data.user.user_metadata?.full_name || email.split('@')[0];
+        const avatar = data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture;
+
+        if (!email) return res.status(400).json({ msg: "Não foi possível obter o email do usuário" });
+
+        let usuario = await Usuario.findOne({email});
+
+        if(!usuario){
+            const salt = crypto.randomBytes(16).toString("hex");
+            const randomPass = crypto.randomBytes(20).toString("hex");
+            usuario = await Usuario.create({ nome, email, avatar, authProvider: 'google', senha: cryptografaSenha(randomPass, salt), salt });
+        } else if (avatar && (!usuario.avatar || usuario.avatar === "")) {
+            usuario.avatar = avatar;
+            await Usuario.findByIdAndUpdate(usuario._id, { avatar }, { new: true })
+        }
+
+        const acessToken = jwt.sign({ userId: usuario._id, email: usuario.email }, process.env.SEGREDO, { expiresIn: "2h" });
+        const refreshToken = jwt.sign({ userId: usuario._id, email: usuario.email }, process.env.SEGREDO_REFRESH, { expiresIn: "2d" });
+
+        await RefreshToken.findOneAndUpdate(
+            { User_id: usuario._id },
+            { Token: refreshToken, createdAt: Date.now() },
+            { upsert: true, new: true }
+        );
+
+        res.json({
+            msg: "Login realizado com sucesso",
+            avatar: usuario.avatar, email: usuario.email, userId: usuario._id, nome: usuario.nome,
+            acessToken, refreshToken
+        });
+    } catch (error) {
+        res.status(500).json({ msg: "Erro interno no servidor" });
+    }
+}
+
+module.exports = { criar, login, obterUser, renovaToken, atualizar, loginOAuthGoogle };

@@ -1,20 +1,40 @@
 const app = require("../app");
+const mongoose = require("mongoose")
 const supertest = require("supertest");
 const request = supertest(app);
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const Usuario = require("../models/model_users");
 
 describe("API Notes - Tarefas diarias", function(){
-    let noteId;
-    const id = "676872080b9a51fe1a00773d";
-
     const tokenUser = jwt.sign({ userId: "" }, process.env.SEGREDO);
-    const token = jwt.sign({ userId: id }, process.env.SEGREDO);
+    let testUserId;
+    let noteId;
+    let token;
+
+    beforeAll( async ()=> {
+        const salt = crypto.randomBytes(16).toString("hex");
+        const hash = crypto.createHmac("sha256", salt);
+        hash.update("senhaTest123");
+        const senhaCriptografada = hash.digest("hex");
+        
+        const testUser = await Usuario.create({
+            _id: new mongoose.Types.ObjectId(),
+            nome: "Fulano",
+            email: "fulano123@hotmail.com",
+            senha: senhaCriptografada,
+            salt: salt,
+        })
+        
+        testUserId = testUser._id.toString();
+        token = jwt.sign({userId: testUserId }, process.env.SEGREDO)
+    })
 
     test("Deve retornar 201 no POST /notes", async ()=>{
         const result = await request.post("/notes")
         .set('authorization', `Bearer ${token}`)
         .send({
-            usuario: id,
+            usuario: Usuario._id,
             status: "pendente",
             titulo: "Tarefas de Hoje",
             descricao: "Estudar sobre JWT, Revisar Metricas de Software, catar coco do cachorro"
@@ -60,7 +80,7 @@ describe("API Notes - Tarefas diarias", function(){
         const result = await request.put(`/notes/${noteId}`)
         .set('authorization', `Bearer ${token}`)
         .send({
-            usuario: id,
+            usuario: testUserId._id,
             status: "concluida",
             titulo:"teste123",              
             descricao:"teste"

@@ -14,6 +14,6 @@ router.patch("/avatar", middleware.validaToken, upload.single("avatar"), control
 router.put("/:id", middleware.validaToken, controller.atualizar);
 router.post("/", controller.criar);
 router.post("/login", controller.login);
-router.post("/renovar", controller.renovaToken)
-
+router.post("/renovar", controller.renovaToken);
+router.post("/oauth/google", controller.loginOAuthGoogle);
 module.exports = router;

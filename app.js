@@ -13,7 +13,9 @@ const notesRouter = require('./routes/router_notes')
 const usersRouter = require("./routes/router_users")
 const routerDocs = require("./routes/router_docs")
 
-mongoose.connect(process.env.MONGODB_URL);
+if (process.env.NODE_ENV !== 'test'){
+    mongoose.connect(process.env.MONGODB_URL);
+}
 
 var app = express();
 app.use(cors());
