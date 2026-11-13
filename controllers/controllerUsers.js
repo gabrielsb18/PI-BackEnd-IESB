@@ -189,7 +189,6 @@ async function login(req, res) {
         });
 
     } catch (error) {
-        console.error("Erro no login:", error);
         res.status(500).json({ msg: "Erro interno no servidor" });
     }
 }
@@ -236,15 +235,19 @@ async function loginOAuthGoogle(req, res) {
 
         const email = data.user.email;
         const nome = data.user.user_metadata?.full_name || email.split('@')[0];
-        const avatar = data.user.user_metadata?.avatar_url;
+        const avatar = data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture;
 
         if (!email) return res.status(400).json({ msg: "Não foi possível obter o email do usuário" });
 
-        let usuario = await Usuario.findOne({ email });
-        if (!usuario) {
+        let usuario = await Usuario.findOne({email});
+
+        if(!usuario){
             const salt = crypto.randomBytes(16).toString("hex");
             const randomPass = crypto.randomBytes(20).toString("hex");
             usuario = await Usuario.create({ nome, email, avatar, authProvider: 'google', senha: cryptografaSenha(randomPass, salt), salt });
+        } else if (avatar && (!usuario.avatar || usuario.avatar === "")) {
+            usuario.avatar = avatar;
+            await Usuario.findByIdAndUpdate(usuario._id, { avatar }, { new: true })
         }
 
         const acessToken = jwt.sign({ userId: usuario._id, email: usuario.email }, process.env.SEGREDO, { expiresIn: "2h" });
@@ -262,7 +265,6 @@ async function loginOAuthGoogle(req, res) {
             acessToken, refreshToken
         });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ msg: "Erro interno no servidor" });
     }
 }
