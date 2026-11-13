@@ -10,7 +10,7 @@ async function updateUserAvatar(req, res) {
         return res.status(401).json({ msg: "Somente usuários autenticados podem mudar o avatar" });
     }
 
-    if (user.avatar) {
+    if (!user.avatar.startsWith('http' || 'https')) {
         await DiskStorage.deleteFile(`uploads/${user.avatar}`);
     }
 
